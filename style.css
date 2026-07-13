@@ -144,15 +144,21 @@ body.lang-switching [data-i18n] { opacity: 0; }
   position: fixed;
   inset: 0 0 auto 0;
   z-index: 100;
+  box-sizing: border-box;
   transition: background-color 320ms ease, box-shadow 320ms ease, padding 320ms ease;
-  padding: 0.65rem 0;
+  /* Safe Area: oben Notch/Dynamic Island, seitlich Landscape-Rundungen */
+  padding-top: calc(0.65rem + env(safe-area-inset-top, 0px));
+  padding-bottom: 0.65rem;
+  padding-left: max(0px, env(safe-area-inset-left, 0px));
+  padding-right: max(0px, env(safe-area-inset-right, 0px));
 }
 .site-header.scrolled {
   background: rgba(22, 48, 42, 0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   box-shadow: 0 4px 24px rgba(18, 38, 32, 0.35);
-  padding: 0.35rem 0;
+  padding-top: calc(0.35rem + env(safe-area-inset-top, 0px));
+  padding-bottom: 0.35rem;
 }
 
 .header-inner {
@@ -244,7 +250,8 @@ body.lang-switching [data-i18n] { opacity: 0; }
   display: grid;
   place-items: center;
   overflow: hidden;
-  padding: calc(var(--header-h) + 2rem) 0 4rem;
+  /* Header + Safe Area (Notch) freihalten, damit der Inhalt darunter beginnt */
+  padding: calc(var(--header-h) + 2rem + env(safe-area-inset-top, 0px)) 0 4rem;
 }
 .hero-media { position: absolute; inset: 0; z-index: -1; }
 .hero-media img {
@@ -747,8 +754,11 @@ address { font-style: normal; line-height: 1.7; }
   z-index: 95;
   display: flex;
   gap: 0.5rem;
-  padding: 0.5rem 0.7rem;
+  /* Home-Indicator unten + Landscape-Rundungen seitlich freihalten */
+  padding-top: 0.5rem;
   padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  padding-left: max(0.7rem, env(safe-area-inset-left, 0px));
+  padding-right: max(0.7rem, env(safe-area-inset-right, 0px));
   background: rgba(247, 242, 233, 0.97);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
