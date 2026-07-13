@@ -236,35 +236,39 @@
   }
 
   function updateOpenStatus() {
-    var badge = document.getElementById("statusBadge");
-    var text = document.getElementById("statusText");
-    var clock = document.getElementById("statusClock");
-    if (!badge) return;
+    var badges = document.querySelectorAll(".status-badge");
+    if (!badges.length) return;
 
     var dict = window.TRANSLATIONS[currentLang];
     var now = nowInLuxembourg();
-    clock.textContent = now.clock;
 
     var isOpen = (HOURS[now.day] || []).some(function (slot) {
       return now.minutes >= slot[0] && now.minutes < slot[1];
     });
 
-    badge.classList.toggle("is-open", isOpen);
-    badge.classList.toggle("is-closed", !isOpen);
-
+    var label;
     if (isOpen) {
-      text.textContent = dict["status.open"];
+      label = dict["status.open"];
     } else {
       var next = nextOpening(now.day, now.minutes);
-      var label = dict["status.closed"];
+      label = dict["status.closed"];
       if (next) {
         var opensKey = next.sameDay
           ? "status.opensAt"
           : next.day === 6 ? "status.opensSat" : "status.opensMon";
         label += " · " + dict[opensKey] + " " + fmtTime(next.time);
       }
-      text.textContent = label;
     }
+
+    // Auf alle Status-Badges anwenden (Hero + Öffnungszeiten)
+    badges.forEach(function (badge) {
+      badge.classList.toggle("is-open", isOpen);
+      badge.classList.toggle("is-closed", !isOpen);
+      var text = badge.querySelector(".status-text");
+      var clock = badge.querySelector(".status-clock");
+      if (text) text.textContent = label;
+      if (clock) clock.textContent = now.clock;
+    });
 
     // "Heute"-Zeile in der Tabelle markieren
     document.querySelectorAll("#hoursTable tr").forEach(function (row) {
@@ -349,6 +353,26 @@
       .catch(function () {
         /* API nicht erreichbar → Karte bleibt ausgeblendet */
       });
+  }
+
+  /* =============================================================
+     7) KARTE — leichtgewichtige Fassade (lädt erst beim Antippen)
+     Spart auf Mobilfunk den Google-Maps-Download beim ersten Laden.
+     ============================================================= */
+  var mapFacade = document.getElementById("mapFacade");
+  if (mapFacade) {
+    mapFacade.addEventListener("click", function () {
+      var dict = window.TRANSLATIONS[currentLang];
+      var iframe = document.createElement("iframe");
+      iframe.id = "mapFrame";
+      iframe.className = "map-embed";
+      iframe.src = mapFacade.getAttribute("data-embed");
+      iframe.title = dict["contact.mapTitle"] || "Google Maps";
+      iframe.loading = "lazy";
+      iframe.setAttribute("referrerpolicy", "no-referrer-when-downgrade");
+      iframe.setAttribute("allowfullscreen", "");
+      mapFacade.replaceWith(iframe);
+    });
   }
 
   /* =============================================================

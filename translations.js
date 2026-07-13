@@ -78,6 +78,11 @@ const TRANSLATIONS = {
     "footer.demo": "Site de démonstration · Design & réalisation :",
     "footer.fictional": "Établissement fictif — toute ressemblance serait délicieuse mais fortuite.",
 
+    "bar.call": "Appeler",
+    "bar.route": "Itinéraire",
+    "contact.route": "Voir l'itinéraire",
+    "map.load": "Afficher la carte",
+
     "misc.backToTop": "Retour en haut de page"
   },
 
@@ -154,6 +159,11 @@ const TRANSLATIONS = {
     "footer.privacy": "Datenschutz",
     "footer.demo": "Demo-Website · Design & Umsetzung:",
     "footer.fictional": "Fiktiver Betrieb — jede Ähnlichkeit wäre köstlich, aber zufällig.",
+
+    "bar.call": "Anrufen",
+    "bar.route": "Route",
+    "contact.route": "Route berechnen",
+    "map.load": "Karte anzeigen",
 
     "misc.backToTop": "Zurück nach oben"
   },
@@ -232,6 +242,11 @@ const TRANSLATIONS = {
     "footer.demo": "Demo website · Design & development:",
     "footer.fictional": "A fictional establishment — any resemblance would be delicious, but coincidental.",
 
+    "bar.call": "Call",
+    "bar.route": "Directions",
+    "contact.route": "Get directions",
+    "map.load": "Show map",
+
     "misc.backToTop": "Back to top"
   },
 
@@ -308,6 +323,11 @@ const TRANSLATIONS = {
     "footer.privacy": "Dateschutz",
     "footer.demo": "Demo-Websäit · Design & Ëmsetzung:",
     "footer.fictional": "E fiktive Betrib — all Ähnlechkeet wier lecker, awer Zoufall.",
+
+    "bar.call": "Uruffen",
+    "bar.route": "Wee",
+    "contact.route": "De Wee weisen",
+    "map.load": "Kaart uweisen",
 
     "misc.backToTop": "Zréck no uewen"
   }

@@ -123,6 +123,15 @@ body.lang-switching [data-i18n] { opacity: 0; }
 .btn-ghost:hover { border-color: var(--cream); background: rgba(247, 242, 233, 0.1); transform: translateY(-2px); }
 .btn-ghost:active { transform: scale(0.98); }
 
+/* Outline-Variante für helle Hintergründe */
+.btn-outline {
+  background: transparent;
+  color: var(--green-800);
+  border-color: var(--green-800);
+}
+.btn-outline:hover { background: var(--green-800); color: var(--cream); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.btn-outline:active { transform: scale(0.98); }
+
 /* dezenter Glow beim ersten Sichtbarwerden des Hero-CTAs */
 @keyframes glowOnce {
   0%, 100% { box-shadow: 0 0 0 0 rgba(176, 141, 87, 0); }
@@ -208,12 +217,16 @@ body.lang-switching [data-i18n] { opacity: 0; }
   border: 0;
   background: transparent;
   color: rgba(247, 242, 233, 0.75);
-  font: 600 0.72rem/1 var(--font-body);
+  font: 600 0.74rem/1 var(--font-body);
   letter-spacing: 0.04em;
   padding: 0.55rem 0.6rem;
   cursor: pointer;
   transition: background-color 200ms ease, color 200ms ease;
-  min-width: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  min-height: 44px; /* daumenfreundliches Tap-Ziel */
 }
 .lang-switch button:hover { color: var(--cream); }
 .lang-switch button.active {
@@ -602,7 +615,7 @@ address { font-style: normal; line-height: 1.7; }
   right: 1.1rem;
   bottom: 1.1rem;
   z-index: 90;
-  width: 46px; height: 46px;
+  width: 48px; height: 48px;
   border-radius: 50%;
   border: 0;
   background: var(--green-800);
@@ -641,13 +654,13 @@ address { font-style: normal; line-height: 1.7; }
 /* Sehr schmale Screens: Header kompakt halten */
 @media (max-width: 480px) {
   .logo-text { display: none; }
-  .header-actions { gap: 0.45rem; }
+  .header-actions { gap: 0.4rem; }
+  /* Der feststehende Anrufen-Button unten übernimmt hier den CTA */
+  .btn-reserve { display: none; }
   .lang-switch button {
-    min-width: 32px;
-    padding: 0.5rem 0.4rem;
-    font-size: 0.68rem;
+    min-width: 48px;
+    min-height: 48px;
   }
-  .btn-reserve { padding: 0.5rem 0.8rem; }
 }
 
 @media (min-width: 640px) {
@@ -665,6 +678,106 @@ address { font-style: normal; line-height: 1.7; }
   }
   .footer-links { justify-content: center; }
   .footer-demo { text-align: right; }
+}
+
+/* =================== Hero-Status =================== */
+.hero-status {
+  margin: 1.4rem auto 0;
+}
+
+/* =================== Kontakt-Aktionen =================== */
+.contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+}
+.contact-actions .btn { flex: 1 1 auto; }
+
+/* =================== Karten-Fassade =================== */
+.map-facade {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: block;
+  position: relative;
+  cursor: pointer;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+  background: var(--green-800);
+}
+.map-facade img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  display: block;
+  transition: transform 400ms var(--ease);
+}
+.map-facade:hover img { transform: scale(1.03); }
+.map-facade-play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  background: rgba(18, 38, 32, 0.28);
+}
+.map-facade-play svg { flex-shrink: 0; }
+.map-facade:focus-visible { outline: 3px solid var(--brass); outline-offset: 2px; }
+
+.map-embed {
+  width: 100%;
+  min-height: 340px;
+  border: 0;
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  display: block;
+}
+
+/* =================== Feststehende Mobile-Aktionsleiste =================== */
+.mobile-bar {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 95;
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+  background: rgba(247, 242, 233, 0.97);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 -4px 22px rgba(18, 38, 32, 0.18);
+}
+.mobile-bar-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 54px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: transform 120ms var(--ease);
+}
+.mobile-bar-btn:active { transform: scale(0.97); }
+.mobile-bar-btn.call { background: var(--brass); color: #fff; }
+.mobile-bar-btn.route { background: transparent; color: var(--green-800); border: 1.5px solid var(--green-800); }
+
+/* Leiste nur auf Handy/Tablet; Platz freihalten, Back-to-top anheben */
+@media (min-width: 900px) {
+  .mobile-bar { display: none; }
+}
+@media (max-width: 899px) {
+  body { padding-bottom: 74px; }
+  .back-to-top { bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
 }
 
 /* =================== Reduced Motion =================== */
