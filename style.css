@@ -638,6 +638,18 @@ address { font-style: normal; line-height: 1.7; }
 .no-observer .reveal { opacity: 1; transform: none; }
 
 /* =================== Responsive =================== */
+/* Sehr schmale Screens: Header kompakt halten */
+@media (max-width: 480px) {
+  .logo-text { display: none; }
+  .header-actions { gap: 0.45rem; }
+  .lang-switch button {
+    min-width: 32px;
+    padding: 0.5rem 0.4rem;
+    font-size: 0.68rem;
+  }
+  .btn-reserve { padding: 0.5rem 0.8rem; }
+}
+
 @media (min-width: 640px) {
   .btn-reserve span { display: inline; }
   .about-grid { grid-template-columns: 1.15fr 0.85fr; }
