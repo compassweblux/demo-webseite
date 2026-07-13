@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Plat du jour — Administration</title>
+  <style>
+    :root {
+      --green: #16302a;
+      --brass: #b08d57;
+      --cream: #f7f2e9;
+      --ink: #22302b;
+      --ok: #2e8b57;
+      --err: #b03030;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.5;
+      padding: 1rem;
+    }
+    .wrap { max-width: 480px; margin: 0 auto; }
+    header { text-align: center; padding: 1rem 0 1.5rem; }
+    header h1 { font-size: 1.3rem; margin: 0 0 0.2rem; color: var(--green); }
+    header p { margin: 0; font-size: 0.85rem; color: #6b7a73; }
+
+    form, .preview {
+      background: #fff;
+      border-radius: 14px;
+      padding: 1.2rem;
+      box-shadow: 0 4px 20px rgba(18,38,32,0.1);
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--brass);
+      margin: 1rem 0 0.3rem;
+    }
+    label:first-child { margin-top: 0; }
+    input, textarea {
+      width: 100%;
+      font: inherit;
+      font-size: 1rem; /* verhindert iOS-Zoom */
+      padding: 0.85rem;
+      border: 1.5px solid #d8d2c4;
+      border-radius: 10px;
+      background: #fdfcf9;
+    }
+    input:focus, textarea:focus {
+      outline: none;
+      border-color: var(--brass);
+    }
+    textarea { resize: vertical; min-height: 90px; }
+
+    button {
+      width: 100%;
+      margin-top: 1.3rem;
+      padding: 1rem;
+      font: 600 1.05rem/1 inherit;
+      font-family: inherit;
+      color: #fff;
+      background: var(--green);
+      border: 0;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: opacity 150ms ease, transform 100ms ease;
+    }
+    button:active { transform: scale(0.98); }
+    button:disabled { opacity: 0.55; cursor: wait; }
+
+    .msg {
+      margin-top: 0.9rem;
+      padding: 0.8rem 1rem;
+      border-radius: 10px;
+      font-size: 0.92rem;
+      display: none;
+    }
+    .msg.show { display: block; }
+    .msg.ok  { background: #e7f4ec; color: var(--ok); border: 1px solid #bfe3cd; }
+    .msg.err { background: #fbeaea; color: var(--err); border: 1px solid #eec6c6; }
+
+    .preview h2 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--brass);
+      margin: 0 0 0.6rem;
+    }
+    .preview-card {
+      border: 1.5px dashed #d8d2c4;
+      border-radius: 10px;
+      padding: 1rem;
+    }
+    .preview-dish { font-size: 1.15rem; font-weight: 600; color: var(--green); }
+    .preview-desc { font-size: 0.92rem; color: #5a6a62; margin: 0.3rem 0 0.6rem; }
+    .preview-price { font-weight: 600; color: var(--brass); }
+    .preview-empty { color: #9aa69f; font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Plat du jour</h1>
+      <p>La Table du Kirchberg — Administration</p>
+    </header>
+
+    <form id="platForm" autocomplete="off">
+      <label for="pin">Code PIN</label>
+      <input type="password" id="pin" inputmode="numeric" required
+             placeholder="Votre code confidentiel">
+
+      <label for="dish">Plat</label>
+      <input type="text" id="dish" required maxlength="120"
+             placeholder="Ex. : Blanquette de veau à l'ancienne">
+
+      <label for="price">Prix</label>
+      <input type="text" id="price" maxlength="30" placeholder="Ex. : 24,50 €">
+
+      <label for="description">Description</label>
+      <textarea id="description" maxlength="500"
+                placeholder="Ex. : Veau fermier, légumes du marché, riz pilaf"></textarea>
+
+      <button type="submit" id="saveBtn">Enregistrer</button>
+      <div class="msg" id="msg" role="status"></div>
+    </form>
+
+    <div class="preview">
+      <h2>Aperçu en direct</h2>
+      <div class="preview-card">
+        <div class="preview-dish" id="pvDish"><span class="preview-empty">Le plat s'affichera ici…</span></div>
+        <p class="preview-desc" id="pvDesc"></p>
+        <div class="preview-price" id="pvPrice"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+    /* Nach dem Worker-Deploy hier die echte URL eintragen: */
+    var API_URL = "https://plat-du-jour.IHRE-SUBDOMAIN.workers.dev/api/plat-du-jour";
+
+    var form = document.getElementById("platForm");
+    var saveBtn = document.getElementById("saveBtn");
+    var msg = document.getElementById("msg");
+
+    var fields = {
+      dish: document.getElementById("dish"),
+      price: document.getElementById("price"),
+      description: document.getElementById("description")
+    };
+
+    /* ------- Live-Vorschau während des Tippens ------- */
+    function updatePreview() {
+      var dish = fields.dish.value.trim();
+      document.getElementById("pvDish").textContent =
+        dish || "";
+      if (!dish) {
+        document.getElementById("pvDish").innerHTML =
+          '<span class="preview-empty">Le plat s’affichera ici…</span>';
+      }
+      document.getElementById("pvDesc").textContent = fields.description.value.trim();
+      document.getElementById("pvPrice").textContent = fields.price.value.trim();
+    }
+    Object.keys(fields).forEach(function (k) {
+      fields[k].addEventListener("input", updatePreview);
+    });
+
+    /* ------- Aktuelles Gericht laden (Formular vorbefüllen) ------- */
+    fetch(API_URL)
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (data) {
+        if (!data || !data.dish) return;
+        fields.dish.value = data.dish;
+        fields.price.value = data.price || "";
+        fields.description.value = data.description || "";
+        updatePreview();
+      })
+      .catch(function () { /* offline oder noch nichts gespeichert — kein Problem */ });
+
+    /* ------- Speichern ------- */
+    function showMsg(text, ok) {
+      msg.textContent = text;
+      msg.className = "msg show " + (ok ? "ok" : "err");
+    }
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      msg.className = "msg";
+      saveBtn.disabled = true;
+      saveBtn.textContent = "Enregistrement…";
+
+      fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + document.getElementById("pin").value.trim()
+        },
+        body: JSON.stringify({
+          dish: fields.dish.value.trim(),
+          price: fields.price.value.trim(),
+          description: fields.description.value.trim()
+        })
+      })
+        .then(function (res) {
+          if (res.status === 401) {
+            throw new Error("Code PIN incorrect. Veuillez réessayer.");
+          }
+          if (!res.ok) {
+            throw new Error("Erreur du serveur (" + res.status + "). Réessayez dans un instant.");
+          }
+          return res.json();
+        })
+        .then(function (data) {
+          showMsg("✓ Enregistré ! Le site affiche maintenant : « " + data.dish + " »", true);
+        })
+        .catch(function (err) {
+          var offline = err instanceof TypeError;
+          showMsg(offline
+            ? "Connexion impossible. Vérifiez votre réseau et l'adresse de l'API."
+            : err.message, false);
+        })
+        .finally(function () {
+          saveBtn.disabled = false;
+          saveBtn.textContent = "Enregistrer";
+        });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# =============================================================
+# La Table du Kirchberg — Plat-du-jour Worker
+# Deploy-Anleitung: siehe README.md
+# =============================================================
+
+name = "plat-du-jour"
+main = "worker.js"
+compatibility_date = "2026-07-01"
+
+# KV-Namespace anlegen mit:
+#   npx wrangler kv namespace create PLAT_DU_JOUR
+# Danach die ausgegebene "id" hier eintragen:
+[[kv_namespaces]]
+binding = "PLAT_DU_JOUR"
+id = "HIER_DIE_KV_NAMESPACE_ID_EINTRAGEN"
+
+# Das Admin-PIN wird NICHT hier hinterlegt, sondern als Secret:
+#   npx wrangler secret put ADMIN_PIN
